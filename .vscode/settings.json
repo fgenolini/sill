@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "raylib.h": "c",
-        "main_loop.h": "c"
-    }
+        "main_loop.h": "c",
+        "load_resources.h": "c",
+        "init.h": "c",
+        "say.h": "c"
+    },
+    "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools"
 }
