@@ -1,4 +1,7 @@
 #include "raylib.h"
+
+#include "init.h"
+#include "main_loop.h"
 #include "say.h"
 
 Texture2D sill_texture = {0};
@@ -26,5 +29,8 @@ void load_resources()
         return;
     }
 
+    has_sill_texture = true;
+    sill_texture_x = screen_width / 2 - sill_texture.width / 2;
+    sill_texture_y = screen_height / 2 - sill_texture.height / 2;
     say(__FILE__, func, __LINE__, LOG_INFO, "done");
 }
