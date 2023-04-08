@@ -1,8 +1,8 @@
 #ifndef __INIT_H__
 #define __INIT_H__
 
-extern const float screen_width;
-extern const float screen_height;
+#define screen_width 1920.0f
+#define screen_height 1080.0f
 
 extern void init();
 

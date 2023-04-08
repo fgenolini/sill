@@ -4,10 +4,8 @@
 #include "raylib.h"
 
 #include "load_resources.h"
+#include "init.h"
 #include "say.h"
-
-const float screen_width = 1920.0f;
-const float screen_height = 1080.0f;
 
 // Frames per second, usually 30 is enough,
 //   as long as moving objects are not too fast
