@@ -18,13 +18,7 @@ static void atexit_close_window()
 {
     const char *func = "atexit_close_window";
     say(__FILE__, func, __LINE__, LOG_INFO, "cleaning up");
-    if (sill_texture.id)
-    {
-        say(__FILE__, func, __LINE__, LOG_INFO, "unloading textures");
-        UnloadTexture(sill_texture);
-        sill_texture = (const Texture2D){0};
-    }
-
+    unload_resources();
     say(__FILE__, func, __LINE__, LOG_INFO, "closing window");
     CloseWindow();
     say(__FILE__, func, __LINE__, LOG_INFO, "done");

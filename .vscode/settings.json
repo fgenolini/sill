@@ -5,7 +5,11 @@
         "load_resources.h": "c",
         "init.h": "c",
         "say.h": "c",
-        "raymath.h": "c"
+        "raymath.h": "c",
+        "dice.h": "c",
+        "object.h": "c",
+        "egg.h": "c",
+        "collision.h": "c"
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools"
 }
