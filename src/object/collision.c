@@ -11,8 +11,6 @@
 collision_state collisions[collision_count] = {0};
 
 static Rectangle rectangles[object_count] = {0};
-static Vector2 all_speed_after[object_count][collision_count] = {0};
-static float all_rotation_speed_after[object_count][collision_count] = {0};
 static char buffer[256];
 
 void initialise_collision_pairs()
@@ -60,16 +58,16 @@ void update_objects()
     bool any_collision = false;
     for (int i = 0; i < collision_count; ++i)
     {
-        if (CheckCollisionRecs(rectangles[collisions[i].id[0]],
-                               rectangles[collisions[i].id[1]]))
+        collision_state *c = &collisions[i];
+        if (CheckCollisionRecs(rectangles[c->id[0]], rectangles[c->id[1]]))
         {
-            collisions[i].collision_detected = true;
+            c->collision_detected = true;
             any_collision = true;
         }
         else
         {
-            collisions[i].collision_detected = false;
-            collisions[i].in_collision = false;
+            c->collision_detected = false;
+            c->in_collision = false;
         }
     }
 
@@ -116,10 +114,12 @@ void update_objects()
         return;
 
     for (int i = 0; i < object_count; ++i)
+    {
+        int speed_count = 0;
+        Vector2 speed = {0};
+        float rotation_speed = 0.0f;
         for (int j = 0; j < collision_count; j++)
         {
-            all_speed_after[i][j] = (Vector2){0};
-            all_rotation_speed_after[i][j] = 0.0f;
             collision_state *c = &collisions[j];
             if (!c->collision_detected)
                 continue;
@@ -127,40 +127,33 @@ void update_objects()
             if (c->id[0] != i && c->id[1] != i)
                 continue;
 
+            Vector2 speed_after = {0};
+            float rotation_speed_after = 0.0f;
             if (c->id[0] == i)
             {
-                all_speed_after[i][j] = c->speed_after[0];
-                all_rotation_speed_after[i][j] = c->rotation_speed_after[0];
+                speed_after = c->speed_after[0];
+                rotation_speed_after = c->rotation_speed_after[0];
             }
             else
             {
-                all_speed_after[i][j] = c->speed_after[1];
-                all_rotation_speed_after[i][j] = c->rotation_speed_after[1];
+                speed_after = c->speed_after[1];
+                rotation_speed_after = c->rotation_speed_after[1];
             }
-        }
 
-    for (int i = 0; i < object_count; ++i)
-    {
-        int speed_count = 0;
-        Vector2 speed = {0};
-        float rotation_speed = 0.0f;
-        for (int j = 0; j < collision_count; j++)
-        {
-            if (all_speed_after[i][j].x == 0.0f &&
-                all_speed_after[i][j].y == 0.0f)
+            if (speed_after.x == 0.0f && speed_after.y == 0.0f)
                 continue;
 
             ++speed_count;
             if (speed_count == 1)
             {
-                speed = all_speed_after[i][j];
-                rotation_speed = all_rotation_speed_after[i][j];
+                speed = speed_after;
+                rotation_speed = rotation_speed_after;
                 continue;
             }
 
-            // Multiple collisions, multiple speeds: add vectors
-            speed = Vector2Add(speed, all_speed_after[i][j]);
-            rotation_speed += all_rotation_speed_after[i][j];
+            // Multiple collisions, multiple speeds
+            speed = Vector2Add(speed, speed_after);
+            rotation_speed += rotation_speed_after;
         }
 
         if (!speed_count)
