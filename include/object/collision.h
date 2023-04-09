@@ -26,7 +26,7 @@ extern collision_state collisions[collision_count];
 extern void initialise_collision_pairs();
 
 // Location change, speed, rotation, collision
-extern void update_objects();
+extern void update_objects_after_collision();
 
 extern Vector2 speed_after_collision(const object *this_end,
                                      int collision_id, int other_end,

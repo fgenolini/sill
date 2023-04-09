@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdio.h>
 
 #include "raylib.h"
@@ -11,21 +12,8 @@
 #include "say.h"
 
 #define dice_radius 50.0f
-#define dice_width dice_radius * 2.0f
-#define height_minus_dice screen_height - dice_radius
-#define width_minus_dice screen_width - dice_radius
 
 static char buffer[256];
-
-static bool dice_out_of_bounds_x(float x)
-{
-    return x <= dice_radius || x >= width_minus_dice;
-}
-
-static bool dice_out_of_bounds_y(float y)
-{
-    return y <= dice_radius || y >= height_minus_dice;
-}
 
 static void update_dice(object *optional_instance)
 {
@@ -33,56 +21,32 @@ static void update_dice(object *optional_instance)
     if (optional_instance)
         me = optional_instance;
 
-    if (me->speed.x == 0.0f && me->speed.y == 0.0f)
-        return;
-
-    me->position.x += me->speed.x * main_state.delta_time;
-    me->position.y += me->speed.y * main_state.delta_time;
-    if (!is_in_collision(me->id))
-        me->rotation += me->rotation_speed * main_state.delta_time;
-
-    if (dice_out_of_bounds_x(me->position.x))
-    {
-        if (me->position.x < dice_radius)
-            me->position.x = dice_radius + 1.0f;
-        else if (me->position.x > width_minus_dice)
-            me->position.x = width_minus_dice - 1.0f;
-
-        me->speed.x *= -0.99f;
-        me->rotation_speed *= -0.99f;
-    }
-
-    if (dice_out_of_bounds_y(me->position.y))
-    {
-        if (me->position.y < dice_radius)
-            me->position.y = dice_radius + 1.0f;
-        else if (me->position.y > height_minus_dice)
-            me->position.y = height_minus_dice - 1.0f;
-
-        me->speed.y *= -0.99f;
-        me->rotation_speed *= -0.99f;
-    }
+    update_object(me);
 }
 
-static Rectangle dice_collision_rectangle(object *optional_instance)
+static Rectangle dice_collision_rectangle(const object *optional_instance)
 {
-    object *me = &dice;
+    const object *me = &dice;
     if (optional_instance)
         me = optional_instance;
 
+    float extra = 1.5f;
+    if (fabs(me->rotation < 10.0f))
+        extra = 0.0f;
+
     Rectangle dice_rec = {0};
-    dice_rec.x = me->position.x;
-    dice_rec.width = dice_width;
-    dice_rec.y = me->position.y;
-    dice_rec.height = dice_width;
+    dice_rec.x = me->position.x - extra;
+    dice_rec.width = me->radius * 2.0f + 2.0f * extra;
+    dice_rec.y = me->position.y - extra;
+    dice_rec.height = me->radius * 2.0f + 2.0f * extra;
     return dice_rec;
 }
 
-static Vector2 dice_speed_after(object *optional_instance,
+static Vector2 dice_speed_after(const object *optional_instance,
                                 int collision_id, int other_end,
                                 float *rotation_speed)
 {
-    object *me = &dice;
+    const object *me = &dice;
     if (optional_instance)
         me = optional_instance;
 
@@ -93,22 +57,27 @@ static Vector2 dice_speed_after(object *optional_instance,
     return speed_after;
 }
 
-static void draw_dice(object *optional_instance)
+static void draw_dice(const object *optional_instance)
 {
-    object *me = &dice;
+    const object *me = &dice;
     if (optional_instance)
         me = optional_instance;
 
     Color color = me->normal_color;
     if (is_in_collision(me->id))
         color = me->collide_color;
-    if (me->rotation > 360.0f)
-        me->rotation = 1.0f;
-    else if (me->rotation < 0.0f)
-        me->rotation = 359.0;
-    DrawRectanglePro(
-        (Rectangle){me->position.x, me->position.y, dice_width, dice_width},
-        (Vector2){dice_radius, dice_radius}, me->rotation, color);
+
+    float rotation = fmod(me->rotation, 360.0);
+    if (rotation < 0)
+        rotation += 360.0f;
+
+    Vector2 position = me->position;
+    if (really_out_of_bounds(me))
+        position = me->last_good_position;
+
+    DrawRectanglePro((Rectangle){position.x, position.y,
+                                 me->radius * 2.0f, me->radius * 2.0f},
+                     (Vector2){me->radius, me->radius}, rotation, color);
 }
 
 static void init_dice_instance(int object_id, object *optional_instance)
@@ -125,6 +94,10 @@ static void init_dice_instance(int object_id, object *optional_instance)
     *optional_instance = dice;
     optional_instance->class_type = &dice;
     optional_instance->id = object_id;
+    sprintf(optional_instance->name, "dice_%09d", object_id);
+    optional_instance->normal_color.a = 200;
+    optional_instance->collide_color.a = 130;
+    optional_instance->last_good_position = optional_instance->position;
     sprintf(buffer, "dice:%d", object_id);
     say(__FILE__, func, __LINE__, LOG_INFO, buffer);
 }
@@ -138,10 +111,12 @@ object dice = {
     NULL,
     (Vector2){screen_width / 2.0f - 90.0f,
               screen_height / 2.0f - 70.0f},
+    {0},
     (Vector2){-200.0f, 140.0f},
     DARKGREEN,
     GREEN,
     0.0f,
     20.0f,
+    dice_radius,
     0,
     "dice"};

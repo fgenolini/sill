@@ -33,7 +33,7 @@ void main_loop()
     while (!WindowShouldClose())
     {
         main_state.delta_time = GetFrameTime();
-        update_objects();
+        update_objects_after_collision();
         draw();
     }
 }
