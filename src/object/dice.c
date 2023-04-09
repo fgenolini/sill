@@ -123,6 +123,7 @@ static void init_dice_instance(int object_id, object *optional_instance)
     }
 
     *optional_instance = dice;
+    optional_instance->class_type = &dice;
     optional_instance->id = object_id;
     sprintf(buffer, "dice:%d", object_id);
     say(__FILE__, func, __LINE__, LOG_INFO, buffer);
@@ -134,6 +135,7 @@ object dice = {
     update_dice,
     dice_speed_after,
     dice_collision_rectangle,
+    NULL,
     (Vector2){screen_width / 2.0f - 90.0f,
               screen_height / 2.0f - 70.0f},
     (Vector2){-200.0f, 140.0f},

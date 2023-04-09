@@ -32,8 +32,8 @@ void initialise_collision_pairs()
             if (count >= collision_count)
                 break;
 
-            collisions[count].end[0] = objects[a].instance;
-            collisions[count].end[1] = objects[b].instance;
+            collisions[count].end[0] = objects[a];
+            collisions[count].end[1] = objects[b];
             collisions[count].id[0] = a;
             collisions[count].id[1] = b;
             collisions[count].collision_detected = false;
@@ -47,11 +47,10 @@ void update_objects()
 {
     const char *func = "update_objects";
     for (int i = 0; i < object_count; ++i)
-        objects[i].class_type->update(objects[i].instance);
+        objects[i]->update(objects[i]);
 
     for (int i = 0; i < object_count; ++i)
-        rectangles[i] =
-            objects[i].class_type->collision_rectangle(objects[i].instance);
+        rectangles[i] = objects[i]->collision_rectangle(objects[i]);
 
     bool any_collision = false;
     for (int i = 0; i < collision_count; ++i)
@@ -102,9 +101,9 @@ void update_objects()
                               (a_speed_y < 0.0 && b_speed_y < 0.0f);
         c->a_faster_x = fabs(a_speed_x) > fabs(b_speed_x);
         c->a_faster_y = fabs(a_speed_y) > fabs(b_speed_y);
-        c->speed_after[0] = e0->speed_after(objects[i].instance, i, 1,
+        c->speed_after[0] = e0->speed_after(objects[i], i, 1,
                                             &c->rotation_speed_after[0]);
-        c->speed_after[1] = e1->speed_after(objects[i].instance, i, 0,
+        c->speed_after[1] = e1->speed_after(objects[i], i, 0,
                                             &c->rotation_speed_after[1]);
     }
 
@@ -157,8 +156,8 @@ void update_objects()
         if (!speed_count)
             continue;
 
-        objects[i].instance->speed = speed;
-        objects[i].instance->rotation_speed = rotation_speed;
+        objects[i]->speed = speed;
+        objects[i]->rotation_speed = rotation_speed;
         if (speed_count > 1)
             say(__FILE__, func, __LINE__, LOG_DEBUG, "multiple speeds");
     }

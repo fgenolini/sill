@@ -135,6 +135,7 @@ static void init_egg_instance(int object_id, object *optional_instance)
     }
 
     *optional_instance = egg;
+    optional_instance->class_type = &egg;
     optional_instance->id = object_id;
     sprintf(buffer, "egg:%d", object_id);
     say(__FILE__, func, __LINE__, LOG_INFO, buffer);
@@ -146,6 +147,7 @@ object egg = {
     update_egg,
     egg_speed_after,
     egg_collision_rectangle,
+    NULL,
     (Vector2){screen_width / 2.0f + 100.0f,
               screen_height / 2.0f - 10.0f},
     (Vector2){0.0f, 0.0f},

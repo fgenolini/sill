@@ -16,6 +16,7 @@ struct object_t
                            float *rotation_speed);
     Rectangle (*collision_rectangle)(struct object_t *optional_instance);
 
+    struct object_t *class_type;
     Vector2 position;
     Vector2 speed;
     Color normal_color;
@@ -27,14 +28,7 @@ struct object_t
 };
 typedef struct object_t object;
 
-struct obj_t
-{
-    object *class_type;
-    object *instance;
-};
-typedef struct obj_t obj;
-
-extern obj objects[object_count];
+extern object *objects[object_count];
 
 extern void initialise_objects();
 extern void draw_objects();
