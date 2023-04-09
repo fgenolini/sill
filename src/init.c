@@ -16,7 +16,7 @@ static const char *default_lang = "en_GB.utf8";
 
 static void atexit_close_window()
 {
-    const char *func = "atexit_close_window";
+    static const char *func = "atexit_close_window";
     say(__FILE__, func, __LINE__, LOG_INFO, "cleaning up");
     unload_resources();
     say(__FILE__, func, __LINE__, LOG_INFO, "closing window");
@@ -26,7 +26,7 @@ static void atexit_close_window()
 
 void init()
 {
-    const char *func = "init";
+    static const char *func = "init";
     say(__FILE__, func, __LINE__, LOG_DEBUG, "hi");
     const char *lang = getenv("LANG");
     if (!lang)

@@ -17,18 +17,18 @@ static char buffer[256];
 
 static void update_dice(object *optional_instance)
 {
-    object *me = &dice;
-    if (optional_instance)
-        me = optional_instance;
+    object *me = optional_instance;
+    if (!me)
+        me = &dice;
 
     update_object(me);
 }
 
 static Rectangle dice_collision_rectangle(const object *optional_instance)
 {
-    const object *me = &dice;
-    if (optional_instance)
-        me = optional_instance;
+    const object *me = optional_instance;
+    if (!me)
+        me = &dice;
 
     float extra = 1.5f;
     if (fabs(me->rotation < 10.0f))
@@ -46,9 +46,9 @@ static Vector2 dice_speed_after(const object *optional_instance,
                                 int collision_id, int other_end,
                                 float *rotation_speed)
 {
-    const object *me = &dice;
-    if (optional_instance)
-        me = optional_instance;
+    const object *me = optional_instance;
+    if (!me)
+        me = &dice;
 
     float rotation_speed_after = me->rotation_speed;
     Vector2 speed_after = speed_after_collision(me, collision_id, other_end,
@@ -59,9 +59,9 @@ static Vector2 dice_speed_after(const object *optional_instance,
 
 static void draw_dice(const object *optional_instance)
 {
-    const object *me = &dice;
-    if (optional_instance)
-        me = optional_instance;
+    const object *me = optional_instance;
+    if (!me)
+        me = &dice;
 
     Color color = me->normal_color;
     if (is_in_collision(me->id))
@@ -82,7 +82,7 @@ static void draw_dice(const object *optional_instance)
 
 static void init_dice_instance(int object_id, object *optional_instance)
 {
-    const char *func = "init_dice_instance";
+    static const char *func = "init_dice_instance";
     if (!optional_instance || optional_instance == &dice)
     {
         dice.id = object_id;

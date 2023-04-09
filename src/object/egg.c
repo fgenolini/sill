@@ -19,20 +19,20 @@ static char buffer[256];
 
 static void update_egg(object *optional_instance)
 {
-    object *me = &egg;
-    if (optional_instance)
-        me = optional_instance;
+    object *me = optional_instance;
+    if (!me)
+        me = &egg;
 
     update_object(me);
 }
 
 static Rectangle egg_collision_rectangle(const object *optional_instance)
 {
-    const object *me = &egg;
-    if (optional_instance)
-        me = optional_instance;
+    const object *me = optional_instance;
+    if (!me)
+        me = &egg;
 
-    float extra = 1.5f;
+    static const float extra = 1.5f;
     Rectangle egg_rec = {0};
     egg_rec.x = me->position.x - extra;
     egg_rec.width = 2.0f * me->radius * 2.0f + 2.0f * extra;
@@ -45,9 +45,9 @@ static Vector2 egg_speed_after(const object *optional_instance,
                                int collision_id, int other_end,
                                float *rotation_speed)
 {
-    const object *me = &egg;
-    if (optional_instance)
-        me = optional_instance;
+    const object *me = optional_instance;
+    if (!me)
+        me = &egg;
 
     float rotation_speed_after = me->rotation_speed;
     Vector2 speed_after = speed_after_collision(me, collision_id, other_end,
@@ -58,9 +58,9 @@ static Vector2 egg_speed_after(const object *optional_instance,
 
 static void draw_egg(const object *optional_instance)
 {
-    const object *me = &egg;
-    if (optional_instance)
-        me = optional_instance;
+    const object *me = optional_instance;
+    if (!me)
+        me = &egg;
 
     Color color = me->normal_color;
     if (is_in_collision(me->id))
@@ -94,7 +94,7 @@ static void draw_egg(const object *optional_instance)
 
 static void init_egg_instance(int object_id, object *optional_instance)
 {
-    const char *func = "init_egg_instance";
+    static const char *func = "init_egg_instance";
     if (!optional_instance || optional_instance == &egg)
     {
         egg.id = object_id;

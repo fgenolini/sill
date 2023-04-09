@@ -12,11 +12,10 @@ collision_state collisions[collision_count] = {0};
 
 static Rectangle rectangles[object_count] = {0};
 static char buffer[256];
-static int count = 0;
 
 void initialise_collision_pairs()
 {
-    const char *func = "initialise_collision_pairs";
+    static const char *func = "initialise_collision_pairs";
     if (collision_count < 1)
         return;
 
@@ -46,7 +45,7 @@ void initialise_collision_pairs()
 
 static void handle_collisions()
 {
-    const char *func = "handle_collisions";
+    static const char *func = "handle_collisions";
     bool any_collision = false;
     for (int i = 0; i < collision_count; ++i)
     {
@@ -64,15 +63,15 @@ static void handle_collisions()
         }
 
         any_collision = true;
-        object *e0 = c->end[0];
-        object *e1 = c->end[1];
+        const object *e0 = c->end[0];
+        const object *e1 = c->end[1];
         c->in_collision = true;
-        float a_speed_x = e0->speed.x;
-        float b_speed_x = e1->speed.x;
+        const float a_speed_x = e0->speed.x;
+        const float b_speed_x = e1->speed.x;
         c->same_direction_x = (a_speed_x >= 0.0f && b_speed_x >= 0.0f) ||
                               (a_speed_x < 0.0f && b_speed_x < 0.0f);
-        float a_speed_y = e0->speed.y;
-        float b_speed_y = e1->speed.y;
+        const float a_speed_y = e0->speed.y;
+        const float b_speed_y = e1->speed.y;
         c->same_direction_y = (a_speed_y >= 0.0f && b_speed_y >= 0.0f) ||
                               (a_speed_y < 0.0f && b_speed_y < 0.0f);
         c->a_faster_x = fabs(a_speed_x) > fabs(b_speed_x);
@@ -86,7 +85,6 @@ static void handle_collisions()
     if (!any_collision)
         return;
 
-    ++count;
     for (int i = 0; i < object_count; ++i)
     {
         int speed_count = 0;
@@ -94,7 +92,7 @@ static void handle_collisions()
         float rotation_speed = 0.0f;
         for (int j = 0; j < collision_count; j++)
         {
-            collision_state *c = &collisions[j];
+            const collision_state *c = &collisions[j];
             if (!c->collision_detected)
                 continue;
 
@@ -125,7 +123,7 @@ static void handle_collisions()
                 continue;
             }
 
-            // Multiple collisions, multiple speeds
+            // Multiple collisions, multiple forces
             speed = Vector2Add(speed, speed_after);
             rotation_speed += rotation_speed_after;
         }
@@ -207,17 +205,17 @@ Vector2 speed_after_collision(const object *this_end, int collision_id,
     if (borrowed_x && borrowed_y)
         return speed_after;
 
-    bool same_speed_x = fabs(sx - this_end->speed.x) < 1.0f;
-    bool i_am_faster_x = c->a_faster_x;
-    if (other_end == 0)
-        i_am_faster_x = !i_am_faster_x;
-
     if (!other_has_speed_x)
         speed_after.x = this_end->speed.x * 0.9f;
     else
     {
         if (c->same_direction_x)
         {
+            const bool same_speed_x = fabs(sx - this_end->speed.x) < 1.0f;
+            bool i_am_faster_x = c->a_faster_x;
+            if (other_end == 0)
+                i_am_faster_x = !i_am_faster_x;
+
             if (same_speed_x)
                 speed_after.x = this_end->speed.x;
             else if (i_am_faster_x)
@@ -229,17 +227,17 @@ Vector2 speed_after_collision(const object *this_end, int collision_id,
             speed_after.x = this_end->speed.x * -0.9f;
     }
 
-    bool same_speed_y = fabs(sy - this_end->speed.y) < 1.0f;
-    bool i_am_faster_y = c->a_faster_y;
-    if (other_end == 0)
-        i_am_faster_y = !i_am_faster_y;
-
     if (!other_has_speed_y)
         speed_after.y = this_end->speed.y * 0.9f;
     else
     {
         if (c->same_direction_y)
         {
+            const bool same_speed_y = fabs(sy - this_end->speed.y) < 1.0f;
+            bool i_am_faster_y = c->a_faster_y;
+            if (other_end == 0)
+                i_am_faster_y = !i_am_faster_y;
+
             if (same_speed_y)
                 speed_after.y = this_end->speed.y;
             else if (i_am_faster_y)

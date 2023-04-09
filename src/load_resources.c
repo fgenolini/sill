@@ -10,7 +10,7 @@ static const char *sill_image = "resources/sill.png";
 
 void load_resources()
 {
-    const char *func = "load_resources";
+    static const char *func = "load_resources";
     say(__FILE__, func, __LINE__, LOG_INFO, "loading sill.png");
     Image sill = LoadImage(sill_image);
     if (!sill.data || !sill.width || !sill.height)
@@ -39,7 +39,7 @@ void load_resources()
 
 void unload_resources()
 {
-    const char *func = "unload_resources";
+    static const char *func = "unload_resources";
     if (!main_state.sill_texture.id)
         return;
 
