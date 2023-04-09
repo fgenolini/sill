@@ -27,90 +27,116 @@ static bool egg_out_of_bounds_y(float y)
     return y <= egg_radius || y >= height_minus_egg;
 }
 
-static void update_egg()
+static void update_egg(object *optional_instance)
 {
-    if (egg.speed.x == 0.0f && egg.speed.y == 0.0f)
+    object *me = &egg;
+    if (optional_instance)
+        me = optional_instance;
+
+    if (me->speed.x == 0.0f && me->speed.y == 0.0f)
         return;
 
-    egg.position.x += egg.speed.x * main_state.delta_time;
-    egg.position.y += egg.speed.y * main_state.delta_time;
-    if (!is_in_collision(egg.id))
-        egg.rotation += egg.rotation_speed * main_state.delta_time;
+    me->position.x += me->speed.x * main_state.delta_time;
+    me->position.y += me->speed.y * main_state.delta_time;
+    if (!is_in_collision(me->id))
+        me->rotation += me->rotation_speed * main_state.delta_time;
 
-    if (egg_out_of_bounds_x(egg.position.x))
+    if (egg_out_of_bounds_x(me->position.x))
     {
-        if (egg.position.x < egg_radius)
-            egg.position.x = egg_radius + 1.0f;
-        else if (egg.position.x > width_minus_egg)
-            egg.position.x = width_minus_egg - 1.0f;
+        if (me->position.x < egg_radius)
+            me->position.x = egg_radius + 1.0f;
+        else if (me->position.x > width_minus_egg)
+            me->position.x = width_minus_egg - 1.0f;
 
-        egg.speed.x *= -0.99f;
-        egg.rotation_speed *= -0.99f;
+        me->speed.x *= -0.99f;
+        me->rotation_speed *= -0.99f;
     }
 
-    if (egg_out_of_bounds_y(egg.position.y))
+    if (egg_out_of_bounds_y(me->position.y))
     {
-        if (egg.position.y < egg_radius)
-            egg.position.y = egg_radius + 1.0f;
-        else if (egg.position.y > height_minus_egg)
-            egg.position.y = height_minus_egg - 1.0f;
+        if (me->position.y < egg_radius)
+            me->position.y = egg_radius + 1.0f;
+        else if (me->position.y > height_minus_egg)
+            me->position.y = height_minus_egg - 1.0f;
 
-        egg.speed.y *= -0.99f;
-        egg.rotation_speed *= -0.99f;
+        me->speed.y *= -0.99f;
+        me->rotation_speed *= -0.99f;
     }
 }
 
-static Rectangle egg_collision_rectangle()
+static Rectangle egg_collision_rectangle(object *optional_instance)
 {
+    object *me = &egg;
+    if (optional_instance)
+        me = optional_instance;
+
     Rectangle egg_rec = {0};
-    egg_rec.x = egg.position.x;
+    egg_rec.x = me->position.x;
     egg_rec.width = 2.0f * egg_width * 1.25f;
-    egg_rec.y = egg.position.y;
+    egg_rec.y = me->position.y;
     egg_rec.height = 2.0f * egg_width * 0.75f;
     return egg_rec;
 }
 
-static Vector2 egg_speed_after(int collision_id, int other_end,
+static Vector2 egg_speed_after(object *optional_instance,
+                               int collision_id, int other_end,
                                float *rotation_speed)
 {
-    float rotation_speed_after = egg.rotation_speed;
-    Vector2 speed_after = speed_after_collision(&egg, collision_id, other_end,
+    object *me = &egg;
+    if (optional_instance)
+        me = optional_instance;
+
+    float rotation_speed_after = me->rotation_speed;
+    Vector2 speed_after = speed_after_collision(me, collision_id, other_end,
                                                 &rotation_speed_after);
     *rotation_speed = rotation_speed_after;
     return speed_after;
 }
 
-static void draw_egg()
+static void draw_egg(object *optional_instance)
 {
-    Color color = egg.normal_color;
-    if (is_in_collision(egg.id))
-        color = egg.collide_color;
+    object *me = &egg;
+    if (optional_instance)
+        me = optional_instance;
 
-    if (egg.rotation != 0.0f)
+    Color color = me->normal_color;
+    if (is_in_collision(me->id))
+        color = me->collide_color;
+
+    if (me->rotation != 0.0f)
     {
         rlPushMatrix();
         {
-            rlTranslatef(egg.position.x, egg.position.y, 0.0f);
-            if (egg.rotation > 360.0f)
-                egg.rotation = 1.0f;
-            else if (egg.rotation < 0.0f)
-                egg.rotation = 359.0;
-            rlRotatef(egg.rotation, 0.0f, 0.0f, 1.0f);
+            rlTranslatef(me->position.x, me->position.y, 0.0f);
+            if (me->rotation > 360.0f)
+                me->rotation = 1.0f;
+            else if (me->rotation < 0.0f)
+                me->rotation = 359.0;
+            rlRotatef(me->rotation, 0.0f, 0.0f, 1.0f);
             DrawEllipse(0.0f, 0.0f,
                         egg_width * 1.25f, egg_width * 0.75f, color);
         }
         rlPopMatrix();
     }
     else
-        DrawEllipse(egg.position.x, egg.position.y,
+        DrawEllipse(me->position.x, me->position.y,
                     egg_width * 1.25f, egg_width * 0.75f, color);
 }
 
-static void init_egg_instance(int object_id)
+static void init_egg_instance(int object_id, object *optional_instance)
 {
     const char *func = "init_egg_instance";
-    egg.id = object_id;
-    sprintf(buffer, "egg:%d", egg.id);
+    if (!optional_instance || optional_instance == &egg)
+    {
+        egg.id = object_id;
+        sprintf(buffer, "my egg:%d", egg.id);
+        say(__FILE__, func, __LINE__, LOG_INFO, buffer);
+        return;
+    }
+
+    *optional_instance = egg;
+    optional_instance->id = object_id;
+    sprintf(buffer, "egg:%d", object_id);
     say(__FILE__, func, __LINE__, LOG_INFO, buffer);
 }
 

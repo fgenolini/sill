@@ -27,78 +27,104 @@ static bool dice_out_of_bounds_y(float y)
     return y <= dice_radius || y >= height_minus_dice;
 }
 
-static void update_dice()
+static void update_dice(object *optional_instance)
 {
-    if (dice.speed.x == 0.0f && dice.speed.y == 0.0f)
+    object *me = &dice;
+    if (optional_instance)
+        me = optional_instance;
+
+    if (me->speed.x == 0.0f && me->speed.y == 0.0f)
         return;
 
-    dice.position.x += dice.speed.x * main_state.delta_time;
-    dice.position.y += dice.speed.y * main_state.delta_time;
-    if (!is_in_collision(dice.id))
-        dice.rotation += dice.rotation_speed * main_state.delta_time;
+    me->position.x += me->speed.x * main_state.delta_time;
+    me->position.y += me->speed.y * main_state.delta_time;
+    if (!is_in_collision(me->id))
+        me->rotation += me->rotation_speed * main_state.delta_time;
 
-    if (dice_out_of_bounds_x(dice.position.x))
+    if (dice_out_of_bounds_x(me->position.x))
     {
-        if (dice.position.x < dice_radius)
-            dice.position.x = dice_radius + 1.0f;
-        else if (dice.position.x > width_minus_dice)
-            dice.position.x = width_minus_dice - 1.0f;
+        if (me->position.x < dice_radius)
+            me->position.x = dice_radius + 1.0f;
+        else if (me->position.x > width_minus_dice)
+            me->position.x = width_minus_dice - 1.0f;
 
-        dice.speed.x *= -0.99f;
-        dice.rotation_speed *= -0.99f;
+        me->speed.x *= -0.99f;
+        me->rotation_speed *= -0.99f;
     }
 
-    if (dice_out_of_bounds_y(dice.position.y))
+    if (dice_out_of_bounds_y(me->position.y))
     {
-        if (dice.position.y < dice_radius)
-            dice.position.y = dice_radius + 1.0f;
-        else if (dice.position.y > height_minus_dice)
-            dice.position.y = height_minus_dice - 1.0f;
+        if (me->position.y < dice_radius)
+            me->position.y = dice_radius + 1.0f;
+        else if (me->position.y > height_minus_dice)
+            me->position.y = height_minus_dice - 1.0f;
 
-        dice.speed.y *= -0.99f;
-        dice.rotation_speed *= -0.99f;
+        me->speed.y *= -0.99f;
+        me->rotation_speed *= -0.99f;
     }
 }
 
-static Rectangle dice_collision_rectangle()
+static Rectangle dice_collision_rectangle(object *optional_instance)
 {
+    object *me = &dice;
+    if (optional_instance)
+        me = optional_instance;
+
     Rectangle dice_rec = {0};
-    dice_rec.x = dice.position.x;
+    dice_rec.x = me->position.x;
     dice_rec.width = dice_width;
-    dice_rec.y = dice.position.y;
+    dice_rec.y = me->position.y;
     dice_rec.height = dice_width;
     return dice_rec;
 }
 
-static Vector2 dice_speed_after(int collision_id, int other_end,
+static Vector2 dice_speed_after(object *optional_instance,
+                                int collision_id, int other_end,
                                 float *rotation_speed)
 {
-    float rotation_speed_after = dice.rotation_speed;
-    Vector2 speed_after = speed_after_collision(&dice, collision_id, other_end,
+    object *me = &dice;
+    if (optional_instance)
+        me = optional_instance;
+
+    float rotation_speed_after = me->rotation_speed;
+    Vector2 speed_after = speed_after_collision(me, collision_id, other_end,
                                                 &rotation_speed_after);
     *rotation_speed = rotation_speed_after;
     return speed_after;
 }
 
-static void draw_dice()
+static void draw_dice(object *optional_instance)
 {
-    Color color = dice.normal_color;
-    if (is_in_collision(dice.id))
-        color = dice.collide_color;
-    if (dice.rotation > 360.0f)
-        dice.rotation = 1.0f;
-    else if (dice.rotation < 0.0f)
-        dice.rotation = 359.0;
+    object *me = &dice;
+    if (optional_instance)
+        me = optional_instance;
+
+    Color color = me->normal_color;
+    if (is_in_collision(me->id))
+        color = me->collide_color;
+    if (me->rotation > 360.0f)
+        me->rotation = 1.0f;
+    else if (me->rotation < 0.0f)
+        me->rotation = 359.0;
     DrawRectanglePro(
-        (Rectangle){dice.position.x, dice.position.y, dice_width, dice_width},
-        (Vector2){dice_radius, dice_radius}, dice.rotation, color);
+        (Rectangle){me->position.x, me->position.y, dice_width, dice_width},
+        (Vector2){dice_radius, dice_radius}, me->rotation, color);
 }
 
-static void init_dice_instance(int object_id)
+static void init_dice_instance(int object_id, object *optional_instance)
 {
     const char *func = "init_dice_instance";
-    dice.id = object_id;
-    sprintf(buffer, "dice:%d", dice.id);
+    if (!optional_instance || optional_instance == &dice)
+    {
+        dice.id = object_id;
+        sprintf(buffer, "my dice:%d", dice.id);
+        say(__FILE__, func, __LINE__, LOG_INFO, buffer);
+        return;
+    }
+
+    *optional_instance = dice;
+    optional_instance->id = object_id;
+    sprintf(buffer, "dice:%d", object_id);
     say(__FILE__, func, __LINE__, LOG_INFO, buffer);
 }
 

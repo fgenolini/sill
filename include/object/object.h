@@ -3,17 +3,18 @@
 
 #include "raylib.h"
 
-#define object_count 2
+#define object_count 3
 #define object_name_length 60
 
 struct object_t
 {
-    void (*init)(int object_id);
-    void (*draw)();
-    void (*update)();
-    Vector2 (*speed_after)(int collision_id, int other_end,
+    void (*init)(int object_id, struct object_t *optional_instance);
+    void (*draw)(struct object_t *optional_instance);
+    void (*update)(struct object_t *optional_instance);
+    Vector2 (*speed_after)(struct object_t *optional_instance,
+                           int collision_id, int other_end,
                            float *rotation_speed);
-    Rectangle (*collision_rectangle)();
+    Rectangle (*collision_rectangle)(struct object_t *optional_instance);
 
     Vector2 position;
     Vector2 speed;
@@ -26,7 +27,14 @@ struct object_t
 };
 typedef struct object_t object;
 
-extern object *objects[object_count];
+struct obj_t
+{
+    object *class_type;
+    object *instance;
+};
+typedef struct obj_t obj;
+
+extern obj objects[object_count];
 
 extern void initialise_objects();
 extern void draw_objects();
