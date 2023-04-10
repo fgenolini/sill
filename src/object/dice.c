@@ -21,42 +21,29 @@ enum dice_internal_constant
 
 static char buffer[buffer_length];
 
-static void update_dice(object *optional_instance)
+static void update_dice(object *me)
 {
-    object *me = optional_instance;
-    if (!me)
-        // cannot update class (only object instances)
-        return;
-
     update_object(me);
 }
 
-static Rectangle dice_collision_rectangle(const object *optional_instance)
+static Rectangle dice_collision_rectangle(const object *me)
 {
-    const object *me = optional_instance;
-    if (!me)
-        me = &dice;
-
     float extra = 1.5f;
-    if (fabs(me->rotation < 10.0f))
+    if (fabs(me->rotation < 10))
         extra = 0;
 
     Rectangle dice_rec = {0};
     dice_rec.x = me->position.x - extra;
-    dice_rec.width = me->radius * 2.0f + 2.0f * extra;
+    dice_rec.width = me->radius * 2 + 2 * extra;
     dice_rec.y = me->position.y - extra;
-    dice_rec.height = me->radius * 2.0f + 2.0f * extra;
+    dice_rec.height = me->radius * 2 + 2 * extra;
     return dice_rec;
 }
 
-static Vector2 dice_speed_after(const object *optional_instance,
+static Vector2 dice_speed_after(const object *me,
                                 int collision_id, int other_end,
                                 float *rotation_speed)
 {
-    const object *me = optional_instance;
-    if (!me)
-        me = &dice;
-
     float rotation_speed_after = me->rotation_speed;
     Vector2 speed_after = speed_after_collision(me, collision_id, other_end,
                                                 &rotation_speed_after);
@@ -64,24 +51,19 @@ static Vector2 dice_speed_after(const object *optional_instance,
     return speed_after;
 }
 
-static void draw_dice(const object *optional_instance)
+static void draw_dice(const object *me)
 {
-    const object *me = optional_instance;
-    if (!me)
-        // class cannot be drawn, only object instances can
-        return;
-
     Color color = me->normal_color;
     if (is_in_collision(me->id))
         color = me->collide_color;
 
-    float rotation = fmod(me->rotation, 360.0);
+    float rotation = fmod(me->rotation, 360);
     if (rotation < 0)
-        rotation += 360.0f;
+        rotation += 360;
 
     Vector2 position = me->position;
     DrawRectanglePro((Rectangle){position.x, position.y,
-                                 me->radius * 2.0f, me->radius * 2.0f},
+                                 me->radius * 2, me->radius * 2},
                      (Vector2){me->radius, me->radius}, rotation, color);
 }
 
@@ -97,8 +79,8 @@ static void init_dice_instance(int object_id, object *optional_instance)
 
     *optional_instance = dice;
     optional_instance->id = object_id;
-    snprintf(object_names[object_id], object_name_length,
-             "dice_%08d", object_id);
+    snprintf(buffer, buffer_length, "dice_%08d", object_id);
+    set_object_name(object_id, buffer);
     optional_instance->normal_color.a = 200;
     optional_instance->collide_color.a = 130;
     snprintf(buffer, buffer_length, "dice:%d", object_id);
@@ -115,12 +97,27 @@ static const method_table dice_methods = {
 
 const object dice = {
     &dice_methods,
-    (Vector2){screen_width / 2.0f - 90.0f,
-              screen_height / 2.0f - 70.0f},
-    (Vector2){-200.0f, 140.0f},
-    DARKGREEN,
+
+    // ID (-1 = class, not object instance)
+    -1,
+
+    // collide color
     GREEN,
-    0,
-    20.0f,
+
+    // normal (non colliding) color
+    DARKGREEN,
+
+    // position
+    (Vector2){screen_width / 2 - 90, screen_height / 2 - 70},
+
+    // speed
+    (Vector2){-200, 140},
+
     dice_radius,
-    0};
+
+    // rotation
+    0,
+
+    // rotation speed
+    20,
+};

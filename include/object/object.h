@@ -1,16 +1,9 @@
+// basic graphical object, such as a square or a circle
+
 #ifndef __OBJECT_OBJECT_H__
 #define __OBJECT_OBJECT_H__
 
 #include "raylib.h"
-
-enum object_constant
-{
-    /// @brief number of objects that can collide with each other
-    object_count = 4,
-
-    /// @brief maximum length of an object's name
-    object_name_length = 16
-};
 
 struct object_t;
 struct method_table_t
@@ -19,18 +12,18 @@ struct method_table_t
     void (*init)(int object_id, struct object_t *optional_instance);
 
     /// @brief draw the object at position with rotation
-    void (*draw)(const struct object_t *optional_instance);
+    void (*draw)(const struct object_t *me);
 
     /// @brief call update_object to set position, speed and rotation
-    void (*update)(struct object_t *optional_instance);
+    void (*update)(struct object_t *me);
 
     /// @brief estimate what the speed would be after a single collision
-    Vector2 (*speed_after)(const struct object_t *optional_instance,
+    Vector2 (*speed_after)(const struct object_t *me,
                            int collision_id, int other_end,
                            float *rotation_speed);
 
     /// @brief approximate the collision rectangle for this object
-    Rectangle (*collision_rectangle)(const struct object_t *optional_instance);
+    Rectangle (*collision_rectangle)(const struct object_t *me);
 };
 typedef struct method_table_t method_table;
 
@@ -38,25 +31,25 @@ struct object_t
 {
     const method_table *m;
 
+    int id;
+    Color collide_color;
+    Color normal_color;
     Vector2 position;
     Vector2 speed;
-    Color normal_color;
-    Color collide_color;
+    float radius;
     float rotation;
     float rotation_speed;
-    float radius;
-    int id;
 };
 typedef struct object_t object;
 
-extern object *objects[object_count];
-extern char object_names[object_count][object_name_length];
-
-extern void initialise_objects();
 extern void draw_objects();
+extern object *get_object(int id);
+extern int get_object_count();
+extern void initialise_objects();
 extern bool out_of_bounds(const object *me);
 extern bool out_of_bounds_x(const object *me);
 extern bool out_of_bounds_y(const object *me);
+extern void set_object_name(int id, const char *name);
 extern void update_object(object *me);
 
 #endif
