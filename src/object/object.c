@@ -20,12 +20,8 @@ enum object_internal_constant
     object_name_length = 16
 };
 
-static char object_names[object_count][object_name_length];
-static object dice1 = {0};
-static object egg1 = {0};
-static object egg2 = {0};
-static object green_stone1 = {0};
-static object *objects[object_count] = {&dice1, &egg1, &egg2, &green_stone1};
+static char object_names[object_count][object_name_length] = {0};
+static object objects[object_count] = {0};
 
 int get_object_count()
 {
@@ -34,7 +30,7 @@ int get_object_count()
 
 object *get_object(int id)
 {
-    return objects[id];
+    return &objects[id];
 }
 
 void set_object_name(int id, const char *name)
@@ -45,7 +41,7 @@ void set_object_name(int id, const char *name)
 void draw_objects()
 {
     for (int i = 0; i < object_count; ++i)
-        objects[i]->m->draw(objects[i]);
+        objects[i].m->draw(&objects[i]);
 }
 
 bool out_of_bounds(const object *me)
@@ -148,16 +144,16 @@ void initialise_objects()
     class_types[2] = &egg;
     class_types[3] = &dice;
     for (int i = 0; i < object_count; ++i)
-        class_types[i]->m->init(i, objects[i]);
+        class_types[i]->m->init(i, &objects[i]);
 
-    egg1.rotation = 350;
-    egg2.rotation = 355;
-    egg2.position = (Vector2){egg1.position.x + 120,
-                              egg1.position.y + 40};
-    green_stone1.position = (Vector2){egg2.position.x - 210,
-                                      egg2.position.y + 50};
-    green_stone1.speed = (Vector2){0};
-    green_stone1.radius = dice1.radius / 2.5f;
-    green_stone1.rotation = 240;
-    green_stone1.rotation_speed = 0;
+    objects[1].rotation = 350;
+    objects[2].rotation = 355;
+    objects[2].position = (Vector2){objects[1].position.x + 120,
+                                    objects[1].position.y + 40};
+    objects[3].position = (Vector2){objects[2].position.x - 210,
+                                    objects[2].position.y + 50};
+    objects[3].speed = (Vector2){0};
+    objects[3].radius = objects[0].radius / 2.5f;
+    objects[3].rotation = 240;
+    objects[3].rotation_speed = 0;
 }
