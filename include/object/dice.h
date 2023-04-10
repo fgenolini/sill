@@ -3,6 +3,7 @@
 
 #include "object/object.h"
 
-extern object dice;
+/// @brief class for a square
+extern const object dice;
 
 #endif

@@ -3,6 +3,7 @@
 
 #include "object/object.h"
 
-extern object egg;
+/// @brief class for an ellipse
+extern const object egg;
 
 #endif

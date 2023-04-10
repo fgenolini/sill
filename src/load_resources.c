@@ -30,9 +30,9 @@ void load_resources()
     }
 
     main_state.has_sill_texture = true;
-    main_state.sill_texture_x = (int)screen_width / 2 -
+    main_state.sill_texture_x = screen_width / 2 -
                                 main_state.sill_texture.width / 2;
-    main_state.sill_texture_y = (int)screen_height / 2 -
+    main_state.sill_texture_y = screen_height / 2 -
                                 main_state.sill_texture.height / 2;
     say(__FILE__, func, __LINE__, LOG_INFO, "done");
 }

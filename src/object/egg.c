@@ -11,17 +11,28 @@
 #include "object/egg.h"
 #include "say.h"
 
-#define egg_radius 20.0f
-#define h_factor 1.1f
-#define v_factor 0.9f
+enum egg_internal_constant
+{
+    buffer_length = 16,
 
-static char buffer[256];
+    /// @brief radius of the circle before h_factor and v_factor deformation
+    egg_radius = 20
+};
+
+/// @brief ellipse horizontal deformation
+static const float h_factor = 1.1f;
+
+/// @brief ellipse vertical deformation
+static const float v_factor = 0.9f;
+
+static char buffer[buffer_length];
 
 static void update_egg(object *optional_instance)
 {
     object *me = optional_instance;
     if (!me)
-        me = &egg;
+        // cannot update class (only object instances)
+        return;
 
     update_object(me);
 }
@@ -60,27 +71,25 @@ static void draw_egg(const object *optional_instance)
 {
     const object *me = optional_instance;
     if (!me)
-        me = &egg;
+        // class cannot be drawn, only object instances can
+        return;
 
     Color color = me->normal_color;
     if (is_in_collision(me->id))
         color = me->collide_color;
 
     Vector2 position = me->position;
-    if (really_out_of_bounds(me))
-        position = me->last_good_position;
-
-    if (me->rotation != 0.0f)
+    if (me->rotation != 0)
     {
         rlPushMatrix();
         {
-            rlTranslatef(position.x, position.y, 0.0f);
+            rlTranslatef(position.x, position.y, 0);
             float rotation = fmod(me->rotation, 360.0);
             if (rotation < 0)
                 rotation += 360.0f;
 
-            rlRotatef(rotation, 0.0f, 0.0f, 1.0f);
-            DrawEllipse(0.0f, 0.0f,
+            rlRotatef(rotation, 0, 0, 1);
+            DrawEllipse(0, 0,
                         me->radius * 2.0f * h_factor,
                         me->radius * 2.0f * v_factor, color);
         }
@@ -97,38 +106,37 @@ static void init_egg_instance(int object_id, object *optional_instance)
     static const char *func = "init_egg_instance";
     if (!optional_instance || optional_instance == &egg)
     {
-        egg.id = object_id;
-        sprintf(buffer, "my egg:%d", egg.id);
+        snprintf(buffer, buffer_length, "my egg:%d", egg.id);
         say(__FILE__, func, __LINE__, LOG_INFO, buffer);
         return;
     }
 
     *optional_instance = egg;
-    optional_instance->class_type = &egg;
     optional_instance->id = object_id;
-    sprintf(optional_instance->name, "egg_%09d", object_id);
+    snprintf(object_names[object_id], object_name_length,
+             "egg_%08d", object_id);
     optional_instance->normal_color.a = 200;
     optional_instance->collide_color.a = 130;
-    optional_instance->last_good_position = optional_instance->position;
-    sprintf(buffer, "egg:%d", object_id);
+    snprintf(buffer, buffer_length, "egg:%d", object_id);
     say(__FILE__, func, __LINE__, LOG_INFO, buffer);
 }
 
-object egg = {
+static const method_table egg_methods = {
     init_egg_instance,
     draw_egg,
     update_egg,
     egg_speed_after,
     egg_collision_rectangle,
-    NULL,
+};
+
+const object egg = {
+    &egg_methods,
     (Vector2){screen_width / 2.0f + 100.0f,
               screen_height / 2.0f - 10.0f},
-    {0},
-    (Vector2){0.0f, 0.0f},
+    (Vector2){0, 0},
     GOLD,
     YELLOW,
-    0.0f,
-    0.0f,
-    egg_radius,
     0,
-    "egg"};
+    0,
+    egg_radius,
+    0};

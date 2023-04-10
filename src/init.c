@@ -7,9 +7,11 @@
 #include "init.h"
 #include "say.h"
 
-// Frames per second, usually 30 is enough,
-//   as long as moving objects are not too fast
-static const int fps = 30;
+enum init_internal_constant
+{
+    /// @brief frames per second
+    fps = 30
+};
 
 static const char *title = "window sill - basic";
 static const char *default_lang = "en_GB.utf8";
@@ -34,7 +36,7 @@ void init()
 
     setlocale(LC_TIME, lang);
     say(__FILE__, func, __LINE__, LOG_INFO, lang);
-    InitWindow((int)screen_width, (int)screen_height, title);
+    InitWindow(screen_width, screen_height, title);
     atexit(atexit_close_window);
     SetTargetFPS(fps);
     ToggleFullscreen();
