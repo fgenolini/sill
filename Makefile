@@ -2,11 +2,11 @@
 .PHONY: all clean run
 
 all:
-	(cd src && make all)
+	(cd dice_egg && cargo build -r)
 
 clean:
-	(cd src && make clean)
+	(cd dice_egg && cargo clean)
 
 run: all
-	bin/sill
+	dice_egg/target/release/dice_egg
 

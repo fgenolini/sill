@@ -1,4 +1,7 @@
 {
+    "editor.rulers": [
+        80
+    ],
     "files.associations": {
         "raylib.h": "c",
         "main_loop.h": "c",
@@ -12,5 +15,28 @@
         "collision.h": "c",
         "stdio.h": "c"
     },
-    "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools"
+    "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools",
+    "C_Cpp.default.cStandard": "c23",
+    "C_Cpp.default.cppStandard": "c++23",
+    "rust-analyzer.runnables.extraArgs": [
+        "--release"
+    ],
+    "rust-analyzer.check.overrideCommand": [
+        "cargo",
+        "check",
+        "-r",
+        "--quiet",
+        "--workspace",
+        "--message-format=json",
+        "--all-targets"
+    ],
+    "rust-analyzer.cargo.buildScripts.overrideCommand": [
+        "cargo",
+        "check",
+        "-r",
+        "--quiet",
+        "--workspace",
+        "--message-format=json",
+        "--all-targets"
+    ]
 }
