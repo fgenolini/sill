@@ -1,4 +1,9 @@
+mod dice;
+mod text;
+
+use dice::*;
 use raylib::prelude::*;
+use text::*;
 
 /// window title (will not be shown, running full screen)
 const TITLE: &str = "window sill - basic";
@@ -22,16 +27,34 @@ fn main() {
         .fullscreen()
         .build();
     rl.set_target_fps(FPS);
-    let i = Image::load_image(SILL_IMAGE).expect("could not load window sill image");
     let t = rl
-        .load_texture_from_image(&thread, &i)
+        .load_texture(&thread, SILL_IMAGE)
         .expect("could not load texture from window sill image");
     let t_x = SCREEN_WIDTH / 2 - t.width / 2;
+    let mut dice = Dice::default();
     while !rl.window_should_close() {
-        let mut d = rl.begin_drawing(&thread);
-        d.clear_background(Color::WHITE);
-        d.draw_texture(&t, t_x, 0, Color::WHITE);
-        d.draw_fps(10, 10);
-        d.draw_text("Press escape to exit", 190, 200, 20, Color::LIGHTGRAY);
+        let delta_time = rl.get_frame_time();
+        update_objects_after_collision(delta_time, &mut dice);
+        draw(&mut rl, &thread, t_x, &t, &mut dice);
     }
+}
+
+fn update_objects_after_collision(delta_time: f32, dice_0: &mut Dice) {
+    dice_0.update(delta_time);
+}
+
+fn draw(rl: &mut RaylibHandle, thread: &RaylibThread, t_x: i32, t: &Texture2D, dice_0: &mut Dice) {
+    let mut d = rl.begin_drawing(&thread);
+    d.clear_background(Color::WHITE);
+    draw_contents(&mut d, t_x, &t, dice_0);
+}
+
+fn draw_contents(d: &mut RaylibDrawHandle, t_x: i32, t: &Texture2D, dice_0: &mut Dice) {
+    d.draw_texture(&t, t_x, 0, Color::WHITE);
+    draw_objects(d, dice_0);
+    draw_text(d);
+}
+
+fn draw_objects(d: &mut RaylibDrawHandle, dice_0: &mut Dice) {
+    dice_0.draw(d);
 }

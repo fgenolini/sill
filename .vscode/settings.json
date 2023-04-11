@@ -38,5 +38,11 @@
         "--workspace",
         "--message-format=json",
         "--all-targets"
-    ]
+    ],
+    "rust-analyzer.linkedProjects": [
+        "./dice_egg/Cargo.toml",
+        "./dice_egg/Cargo.toml",
+        "./dice_egg/Cargo.toml"
+    ],
+    "rust-analyzer.showUnlinkedFileNotification": false
 }
