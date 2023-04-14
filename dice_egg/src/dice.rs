@@ -1,6 +1,7 @@
 use crate::*;
 use object::*;
 
+/// a green cube
 pub struct Dice {
     pub data: ObjectData,
 }

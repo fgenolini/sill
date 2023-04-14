@@ -2,6 +2,7 @@ use crate::*;
 use object::*;
 use raylib::ffi;
 
+/// a yellow egg / ellipse
 pub struct Egg {
     pub data: ObjectData,
 }

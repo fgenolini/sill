@@ -4,12 +4,14 @@ use egg::*;
 use object::*;
 use text::*;
 
+/// 2D game of moving objects on a window sill
 pub struct Game {
     pub objects: Vec<Box<dyn Object>>,
 }
 
 impl Game {
-    pub fn new() -> Game {
+    /// build up a 2D scene composed of multiple objects
+    pub fn new() -> Self {
         let mut dice = Dice::new(
             0,
             50.0,
@@ -51,6 +53,7 @@ impl Game {
         }
     }
 
+    /// change the objects (position, speed, rotation and colour)
     pub fn update(&mut self, delta_time: f32) {
         for object in self.objects.iter_mut() {
             object.update(delta_time);
