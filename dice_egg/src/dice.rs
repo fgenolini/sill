@@ -1,27 +1,18 @@
 use crate::*;
-use raylib::prelude::*;
+use object::*;
 
 pub struct Dice {
     pub data: ObjectData,
 }
 
-impl Default for Dice {
-    fn default() -> Dice {
-        let mut data = ObjectData::default();
+impl Dice {
+    pub fn new(id: i32, radius: f32, position: Vector2, rotation: f32) -> Self {
+        let mut data = ObjectData::new(id, radius, position, rotation);
         data.collide_color = Color::GREEN;
         data.collide_color.a = 130;
         data.normal_color = Color::DARKGREEN;
         data.normal_color.a = 200;
-        data.position = Vector2::new(
-            SCREEN_WIDTH as f32 / 2.0 - 90.0,
-            SCREEN_HEIGHT as f32 / 2.0 - 70.0,
-        );
-        data.speed = Vector2::new(-200.0, 140.0);
-        data.radius = 50.0;
-        data.rotation = 0.0;
-        data.rotation_speed = 20.0;
-        data.within_bounds = true;
-        Dice { data }
+        Dice { data: data }
     }
 }
 

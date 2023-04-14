@@ -1,5 +1,4 @@
 use crate::*;
-use raylib::prelude::*;
 
 pub struct ObjectData {
     pub id: i32,
@@ -16,6 +15,25 @@ pub struct ObjectData {
 const EXTRA_MARGIN: f32 = 1.5;
 
 impl ObjectData {
+    pub fn new(id: i32, radius: f32, position: Vector2, rotation: f32) -> Self {
+        let collide_color = Color::BLUE;
+        let normal_color = Color::DARKBLUE;
+        let speed = Vector2::new(0.0, 0.0);
+        let rotation_speed = 0.0;
+        let within_bounds = true;
+        ObjectData {
+            id,
+            collide_color,
+            normal_color,
+            position,
+            speed,
+            radius,
+            rotation,
+            rotation_speed,
+            within_bounds,
+        }
+    }
+
     pub fn collision_rectangle(&self) -> Rectangle {
         let mut extra = EXTRA_MARGIN;
         if self.rotation.abs() < 10.0 {
@@ -116,33 +134,6 @@ impl ObjectData {
 
     fn out_of_bounds_y(&self) -> bool {
         self.position.y < self.radius || self.position.y > SCREEN_HEIGHT as f32 - self.radius
-    }
-}
-
-impl Default for ObjectData {
-    fn default() -> ObjectData {
-        let id = 0;
-        let mut collide_color = Color::GREEN;
-        collide_color.a = 130;
-        let mut normal_color = Color::DARKGREEN;
-        normal_color.a = 200;
-        let position = Vector2::new(0.0, 0.0);
-        let speed = Vector2::new(0.0, 0.0);
-        let radius = 0.0;
-        let rotation = 0.0;
-        let rotation_speed = 0.0;
-        let within_bounds = true;
-        ObjectData {
-            id,
-            collide_color,
-            normal_color,
-            position,
-            speed,
-            radius,
-            rotation,
-            rotation_speed,
-            within_bounds,
-        }
     }
 }
 

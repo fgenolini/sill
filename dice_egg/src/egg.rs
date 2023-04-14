@@ -1,6 +1,6 @@
 use crate::*;
+use object::*;
 use raylib::ffi;
-use raylib::prelude::*;
 
 pub struct Egg {
     pub data: ObjectData,
@@ -9,23 +9,14 @@ pub struct Egg {
 const H_FACTOR: f32 = 1.1;
 const V_FACTOR: f32 = 0.9;
 
-impl Default for Egg {
-    fn default() -> Egg {
-        let mut data = ObjectData::default();
+impl Egg {
+    pub fn new(id: i32, radius: f32, position: Vector2, rotation: f32) -> Self {
+        let mut data = ObjectData::new(id, radius, position, rotation);
         data.collide_color = Color::YELLOW;
         data.collide_color.a = 130;
         data.normal_color = Color::GOLD;
         data.normal_color.a = 200;
-        data.position = Vector2::new(
-            SCREEN_WIDTH as f32 / 2.0 + 100.0,
-            SCREEN_HEIGHT as f32 / 2.0 - 10.0,
-        );
-        data.speed = Vector2::new(0.0, 0.0);
-        data.radius = 20.0;
-        data.rotation = 350.0;
-        data.rotation_speed = 0.0;
-        data.within_bounds = true;
-        Egg { data }
+        Egg { data: data }
     }
 }
 
