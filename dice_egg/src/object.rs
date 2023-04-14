@@ -1,5 +1,11 @@
 use crate::*;
 
+pub trait Object {
+    fn draw(&self, d: &mut RaylibDrawHandle);
+    fn update(&mut self, delta_time: f32);
+    fn collision_rectangle(&self) -> Rectangle;
+}
+
 pub struct ObjectData {
     pub id: i32,
     pub collide_color: Color,
@@ -135,10 +141,4 @@ impl ObjectData {
     fn out_of_bounds_y(&self) -> bool {
         self.position.y < self.radius || self.position.y > SCREEN_HEIGHT as f32 - self.radius
     }
-}
-
-pub trait Object {
-    fn draw(&self, d: &mut RaylibDrawHandle);
-    fn update(&mut self, delta_time: f32);
-    fn collision_rectangle(&self) -> Rectangle;
 }

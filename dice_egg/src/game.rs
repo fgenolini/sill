@@ -9,6 +9,48 @@ pub struct Game {
 }
 
 impl Game {
+    pub fn new() -> Game {
+        let mut dice = Dice::new(
+            0,
+            50.0,
+            Vector2::new(
+                SCREEN_WIDTH as f32 / 2.0 - 90.0,
+                SCREEN_HEIGHT as f32 / 2.0 - 70.0,
+            ),
+            0.0,
+        );
+        dice.data.speed = Vector2::new(-200.0, 140.0);
+        dice.data.rotation_speed = 20.0;
+        let egg1 = Egg::new(
+            1,
+            20.0,
+            Vector2::new(
+                SCREEN_WIDTH as f32 / 2.0 + 100.0,
+                SCREEN_HEIGHT as f32 / 2.0 - 10.0,
+            ),
+            350.0,
+        );
+        let egg2 = Egg::new(
+            2,
+            20.0,
+            Vector2::new(egg1.data.position.x + 120.0, egg1.data.position.y + 40.0),
+            355.0,
+        );
+        let green_stone = Dice::new(
+            3,
+            dice.data.radius / 2.5,
+            Vector2::new(egg2.data.position.x - 210.0, egg2.data.position.y + 50.0),
+            240.0,
+        );
+        let b1 = Box::new(dice) as Box<dyn Object>;
+        let b2 = Box::new(egg1) as Box<dyn Object>;
+        let b3 = Box::new(egg2) as Box<dyn Object>;
+        let b4 = Box::new(green_stone) as Box<dyn Object>;
+        Game {
+            objects: vec![b1, b2, b3, b4],
+        }
+    }
+
     pub fn update(&mut self, delta_time: f32) {
         for object in self.objects.iter_mut() {
             object.update(delta_time);
@@ -31,47 +73,5 @@ impl Game {
         for object in self.objects.iter() {
             object.draw(d);
         }
-    }
-}
-
-pub fn prepare_game() -> Game {
-    let mut dice = Dice::new(
-        0,
-        50.0,
-        Vector2::new(
-            SCREEN_WIDTH as f32 / 2.0 - 90.0,
-            SCREEN_HEIGHT as f32 / 2.0 - 70.0,
-        ),
-        0.0,
-    );
-    dice.data.speed = Vector2::new(-200.0, 140.0);
-    dice.data.rotation_speed = 20.0;
-    let egg1 = Egg::new(
-        1,
-        20.0,
-        Vector2::new(
-            SCREEN_WIDTH as f32 / 2.0 + 100.0,
-            SCREEN_HEIGHT as f32 / 2.0 - 10.0,
-        ),
-        350.0,
-    );
-    let egg2 = Egg::new(
-        2,
-        20.0,
-        Vector2::new(egg1.data.position.x + 120.0, egg1.data.position.y + 40.0),
-        355.0,
-    );
-    let green_stone = Dice::new(
-        3,
-        dice.data.radius / 2.5,
-        Vector2::new(egg2.data.position.x - 210.0, egg2.data.position.y + 50.0),
-        240.0,
-    );
-    let b1 = Box::new(dice) as Box<dyn Object>;
-    let b2 = Box::new(egg1) as Box<dyn Object>;
-    let b3 = Box::new(egg2) as Box<dyn Object>;
-    let b4 = Box::new(green_stone) as Box<dyn Object>;
-    Game {
-        objects: vec![b1, b2, b3, b4],
     }
 }

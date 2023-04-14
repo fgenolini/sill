@@ -33,7 +33,7 @@ fn main() {
         .load_texture(&thread, SILL_IMAGE)
         .expect("could not load texture from window sill image");
     let t_x = SCREEN_WIDTH / 2 - t.width / 2;
-    let mut game = prepare_game();
+    let mut game = Game::new();
     while !rl.window_should_close() {
         let delta_time = rl.get_frame_time();
         game.update(delta_time);
